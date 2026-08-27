@@ -1,16 +1,30 @@
-# React + Vite
+# AQUAVIGIL / OceanTrace
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Frontend prototype for satellite intelligence, oil-spill characterization, vessel attribution, drift impact prediction, and forensic reporting.
 
-Currently, two official plugins are available:
+## Run the frontend
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```powershell
+npm install
+npm run dev
+```
 
-## React Compiler
+- Dashboard: `http://localhost:5173/`
+- Forensic report: `http://localhost:5173/report`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The dashboard keeps the approved OceanTrace UI and adds deterministic DEMO mode controls for traffic filtering, slick metrics, attribution breakdowns, incident details, alerts, and report navigation.
 
-## Expanding the Oxlint configuration
+## Run the API adapter
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r backend/requirements.txt
+uvicorn app.main:app --app-dir backend --reload --port 8000
+```
+
+The FastAPI contract is in `backend/app/main.py`. It currently returns clearly labelled deterministic DEMO data. It includes incident, slick, vessel, traffic, recommendation, and SHA-256 evidence endpoints.
+
+## Demo versus live
+
+Implemented provider names such as Sentinel-1, AIS, HYCOM, CMEMS, and ERA5 are source contracts, not live integrations yet. Before presenting outputs as live, connect the adapters to credentials, real scene/AIS feeds, Rasterio/GDAL preprocessing, model inference, OpenDrift/OpenOil, and PostgreSQL/PostGIS with TimescaleDB for AIS time series.
