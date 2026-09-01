@@ -1,4 +1,4 @@
-# AQUAVIGIL / OceanTrace
+# OceanTrace
 
 Frontend prototype for satellite intelligence, oil-spill characterization, vessel attribution, drift impact prediction, and forensic reporting.
 

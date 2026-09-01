@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
-import { demoMode, incident, vessels, trafficStages } from './demoData.js'
+import { demoMode } from './demoData.js'
+import { getIncident, getIncidentVessels, getTrafficStages } from './api/incidents.js'
+import * as trafficAPI from './api/traffic.js'
 
 function Icon({ children }) {
   return <span className="icon" aria-hidden="true">{children}</span>
@@ -15,6 +17,47 @@ function App() {
   const [trafficStage, setTrafficStage] = useState(5)
   const [alertVisible, setAlertVisible] = useState(true)
   const [detailsOpen, setDetailsOpen] = useState(false)
+  const [incident, setIncident] = useState(null)
+  const [vessels, setVessels] = useState([])
+  const [trafficStages, setTrafficStages] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  // Load data from API on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [incidentData, vesselsData, trafficStagesData] = await Promise.all([
+          getIncident('INC-240824-01'),
+          getIncidentVessels('INC-240824-01'),
+          trafficAPI.getTrafficStages(),
+        ])
+        setIncident(incidentData)
+        setVessels(vesselsData)
+        setTrafficStages(trafficStagesData)
+      } catch (error) {
+        console.error('Failed to load data:', error)
+        // Data loading will use fallback demo data in API layer
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+  }, [])
+
+  // Show loading state if incident not yet loaded
+  if (loading || !incident || vessels.length === 0) {
+    return (
+      <div className="app-shell">
+        <header className="topbar">
+          <div className="brand"><div className="brand-mark"><span /></div><div><strong>OCEAN<span>TRACE</span></strong><small>MARITIME INTELLIGENCE</small></div></div>
+          <nav>{['Overview'].map((item) => <button key={item} className="active">{item}</button>)}</nav>
+          <div className="top-actions"><span className="live"><i /> LIVE SYSTEM</span><button className="avatar">AR</button></div>
+        </header>
+        <main><section className="intro"><h1>Loading incident data...</h1></section></main>
+      </div>
+    )
+  }
 
   const toggleLayer = (layer) => setLayers((current) => ({ ...current, [layer]: !current[layer] }))
 
